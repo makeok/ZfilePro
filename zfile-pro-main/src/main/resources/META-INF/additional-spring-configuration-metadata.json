@@ -1,0 +1,70 @@
+{
+    "properties": [
+        {
+            "name": "zfile.onedrive.clientId",
+            "type": "java.lang.String",
+            "description": "OneDrive ClientId."
+        },
+        {
+            "name": "zfile.onedrive.clientSecret",
+            "type": "java.lang.String",
+            "description": "OneDrive ClientSecret."
+        },
+        {
+            "name": "zfile.onedrive.redirectUri",
+            "type": "java.lang.String",
+            "description": "OneDrive 认证重定向地址."
+        },
+        {
+            "name": "zfile.onedrive.scope",
+            "type": "java.lang.String",
+            "description": "OneDrive 认证权限."
+        },
+        {
+            "name": "zfile.onedrive-china.clientId",
+            "type": "java.lang.String",
+            "description": "OneDrive China ClientId."
+        },
+        {
+            "name": "zfile.onedrive-china.clientSecret",
+            "type": "java.lang.String",
+            "description": "OneDrive China ClientSecret."
+        },
+        {
+            "name": "zfile.onedrive-china.redirectUri",
+            "type": "java.lang.String",
+            "description": "OneDrive China 认证重定向地址."
+        },
+        {
+            "name": "zfile.onedrive-china.scope",
+            "type": "java.lang.String",
+            "description": "OneDrive China 认证权限."
+        },
+        {
+            "name": "zfile.preview.text.maxFileSizeKb",
+            "type": "java.lang.Long",
+            "description": "允许在线读取文本文件的文件大小, 单位为 KB."
+        },
+        {
+            "name": "zfile.log.path",
+            "type": "java.lang.String",
+            "description": "日志文件路径."
+        },
+        {
+            "name": "zfile.db.path",
+            "type": "java.lang.String",
+            "description": "数据库文件路径."
+        },
+        {
+            "name": "zfile.debug",
+            "type": "java.lang.Boolean",
+            "description": "是否开启 debug 模式."
+        },
+        {
+            "name": "zfile.directLinkPrefix",
+            "type": "java.lang.String",
+            "defaultValue": "directlink",
+            "description": "直链前缀名称, 默认为 directlink"
+        }
+    ]
+}

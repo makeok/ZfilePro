@@ -1,0 +1,1 @@
+System.register(["./index-legacy.559a5434.js"],(function(t){"use strict";var e;return{setters:[function(t){e=t.a9}],execute:function(){t("u",{getServerBaseUrl:function(){return e.baseUrl},isEmpty:function(t){return void 0===t||null==t||""==t},isNotEmpty:function(t){return!this.isEmpty(t)}})}}}));

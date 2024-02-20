@@ -1,0 +1,1 @@
+import{d as o}from"./request.88c6336a.js";const r=e=>o({url:"/login",method:"post",data:e}),n=()=>o({url:"/login/verify-mode",method:"get"}),l=()=>o({url:"/login/captcha",method:"get"}),g=()=>o({url:"/logout",method:"post"}),s=()=>o({url:"/login/check",method:"get"});export{r as a,l as b,s as c,g as d,n as l};

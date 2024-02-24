@@ -173,6 +173,8 @@ export default function useFileData() {
         if (!row.name) {
             return;
         }
+        fileDataStore.updateCurrentPreviewMode('list');
+        fileDataStore.updateCurrentPreviewRow(row);
         fileDataStore.updateCurrentClickRow(row);
         // 如果是文件且格式支持预览, 则进行预览, 格式不支持预览, 则直接进行下载 (ftp 模式不支持预览, 全部是下载)
         if (row.type === 'FILE') {

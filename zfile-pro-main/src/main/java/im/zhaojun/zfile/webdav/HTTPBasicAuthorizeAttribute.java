@@ -1,7 +1,7 @@
 package im.zhaojun.zfile.webdav;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import sun.misc.BASE64Decoder;
+import org.apache.commons.net.util.Base64;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -92,9 +92,8 @@ public class HTTPBasicAuthorizeAttribute implements Filter{
         if (s == null) {
             return null;
         }
-        BASE64Decoder decoder = new BASE64Decoder();
         try {
-            byte[] b = decoder.decodeBuffer(s);
+            byte[] b = Base64.decodeBase64(s);
             return new String(b);
         } catch (Exception e) {
             return null;

@@ -511,7 +511,7 @@ const playPrevVideo = () => {
 }
 
 onMounted(() => {
-	initArtPlayer(fileDataStore.currentVideoRow.name, fileDataStore.currentVideoRow.url);
+	initArtPlayer(fileDataStore.currentPreviewRow.name, fileDataStore.currentPreviewRow.url);
 })
 </script>
 

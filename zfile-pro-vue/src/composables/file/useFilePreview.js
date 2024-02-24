@@ -21,7 +21,6 @@ export let dialog3dVisible = ref(false);
 export default function useFilePreview() {
 
     const openVideo = (row) => {
-        fileDataStore.updateCurrentVideoRow(row);
         dialogVideoVisible.value = true;
     }
 
@@ -52,7 +51,6 @@ export default function useFilePreview() {
     }
 
     const openText = (row) => {
-        fileDataStore.updateCurrentTextRow(row);
         dialogTextVisible.value = true;
     }
 

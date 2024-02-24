@@ -37,8 +37,7 @@
     "auto:remove": "plop --plopfile scripts/remove.js",
     "tailwind": "tailwindcss build src/styles.css -o public/styles.css",
     "lint": "eslint --ext .ts,.js,.jsx,.vue .",
-    "lint:fix": "eslint --fix --ext .ts,.js,.jsx,.vue .",
-    "prepare": "husky install"
+    "lint:fix": "eslint --fix --ext .ts,.js,.jsx,.vue ."
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.0.6",

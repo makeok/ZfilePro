@@ -8,8 +8,8 @@ import useStorageConfigStore from "./storage-config";
 const useFileDataStore = defineStore('fileDataStore', {
   state: () => {
     return {
-      currentVideoRow: {},
-      currentTextRow: {},
+      currentPreviewRow: {},
+      currentPreviewMode: 'list',
       currentClickRow: {},
       currentRightClickRow: {},
       currentStorageSource: {
@@ -33,6 +33,13 @@ const useFileDataStore = defineStore('fileDataStore', {
   getters: {
     filterFileByType: (state) => {
       return (type: string) => {
+        if(state.currentPreviewMode == 'repeat'){
+          let repeatList = [];
+          if(state.currentPreviewRow != null){
+            repeatList.push(state.currentPreviewRow)
+          }
+          return repeatList;
+        }
         return state.fileListSource.filter(function (item:any) {
           if (item.type === 'BACK') {
             return false
@@ -44,6 +51,13 @@ const useFileDataStore = defineStore('fileDataStore', {
       };
     },
     fileList: state => {
+      if(state.currentPreviewMode == 'repeat'){
+        let repeatList = [];
+          if(state.currentPreviewRow != null){
+            repeatList.push(state.currentPreviewRow)
+          }
+          return repeatList;
+      }
       if (state.loadFileSize === -1) return [];
       let firstIsBack = state.fileListSource[0]?.type === 'BACK';
       let toSize = firstIsBack ? state.loadFileSize + 1 : state.loadFileSize;
@@ -91,11 +105,11 @@ const useFileDataStore = defineStore('fileDataStore', {
     updateCurrentClickRow(val: any) {
       this.currentClickRow = val;
     },
-    updateCurrentVideoRow(val: any) {
-      this.currentVideoRow = val;
+    updateCurrentPreviewRow(val: any) {
+      this.currentPreviewRow = val;
     },
-    updateCurrentTextRow(val: any) {
-      this.currentTextRow = val;
+    updateCurrentPreviewMode(val: any) {
+      this.currentPreviewMode = val;
     },
     updateCurrentRightClickRow(val: any) {
       this.currentRightClickRow = val;

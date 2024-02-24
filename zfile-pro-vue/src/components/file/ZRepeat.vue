@@ -16,18 +16,22 @@
 								:key="indexTtem +'zfile-img-col'"
 								v-for="(colItem,indexTtem) in rowItem">
 								<div v-if="colItem?.url">
-									<el-image v-if="common.getFileType(colItem.name)=='image'" key="md5(colItem.url)" loading="lazy" lazy
-										class=""
+									<!-- lazy会只加载一个图片,暂时关闭 -->
+									<el-image 
+										v-if="common.getFileType(colItem.name)=='image'"
+										:key="md5(colItem.url)"
 										:src="colItem.thumbnail" fit="cover" 
 										:preview-src-list="[colItem.url]"
-										:alt="colItem.name"/>
+										:title="colItem.url"
+										:alt="colItem.url"
+										></el-image>
 									<div>
 										<el-checkbox :key="md5(colItem.url)+'-checkbox'" :label="colItem" :title="colItem.name">
 										{{ colItem.name }}
 										</el-checkbox>
 										<p class="">{{'/'+storageKey+colItem.path}}</p>
 										<p class="">{{common.fileSizeFormat(colItem.size)}}</p>
-										<el-button type="info" plain size="small" @click="openRow(colItem)">下载</el-button>
+										<el-button type="info" plain size="small" @click="openRow(colItem)">查看详情</el-button>
 									</div>
 								</div>
 							</el-col>

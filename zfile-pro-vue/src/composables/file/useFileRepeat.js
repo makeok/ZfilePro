@@ -5,6 +5,10 @@ import common from "~/common";
 
 import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
+
+import useFileDataStore from "~/stores/file-data";
+let fileDataStore = useFileDataStore();
+
 import useFilePwd from "~/composables/file/useFilePwd";
 let { getPathPwd } = useFilePwd();
 
@@ -99,19 +103,21 @@ export default function useFileRepeat() {
     // 点击文件时，判断是文件夹则进入文件夹，是文件则进行预览
     const openRow = (row) => {
         const { batchDownloadFile } = useFileOperator();
-        batchDownloadFile(row);
+        // batchDownloadFile(row);
         // 获取文件类型
-        // let fileType = common.getFileType(row.name);
-        // switch (fileType) {
-        //     case 'video': openVideo(row); break;
-        //     case 'image': openImage(row); break;
-        //     case 'text': openText(row); break;
-        //     case 'audio': openAudio(row); break;
-        //     case 'office': openOffice(row); break;
-        //     case 'pdf': openPdf(row); break;
-        //     case 'three3d': open3d(row); break;
-        //     default: batchDownloadFile(row);
-        // }
+        fileDataStore.updateCurrentPreviewMode('repeat');
+        fileDataStore.updateCurrentPreviewRow(row);
+        let fileType = common.getFileType(row.name);
+        switch (fileType) {
+            case 'video': openVideo(row); break;
+            case 'image': openImage(row); break;
+            case 'text': openText(row); break;
+            case 'audio': openAudio(row); break;
+            case 'office': openOffice(row); break;
+            case 'pdf': openPdf(row); break;
+            case 'three3d': open3d(row); break;
+            default: batchDownloadFile(row);
+        }
     }
 
     // 打开复制文件 dialog

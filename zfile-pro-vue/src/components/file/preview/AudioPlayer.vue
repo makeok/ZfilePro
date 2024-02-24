@@ -16,7 +16,7 @@ watch(() => fileDataStore.audioArray, (newVal) => {
 	let data = [];
 	let currentAudioIndex = 0;
 	newVal.forEach((item, index) => {
-		if (item.name === fileDataStore.currentClickRow.name) {
+		if (item.name === fileDataStore.currentPreviewRow.name) {
 			currentAudioIndex = index;
 		}
 		data.push({

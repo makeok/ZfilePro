@@ -158,42 +158,42 @@
 
       <!-- 文本编辑器 -->
       <el-dialog draggable class="zfile-text-dialog zfile-dialog-mini-close" :destroy-on-close="true"
-                 :title="fileDataStore.currentTextRow.name"
+                 :title="fileDataStore.currentPreviewRow.name"
                  v-model="dialogTextVisible">
-        <TextViewer :file-name="fileDataStore.currentTextRow.name"
-                    :file-url="fileDataStore.currentTextRow.url"
-                    v-if="dialogTextVisible && fileDataStore.currentTextRow.name.indexOf('.md') === -1"/>
-        <MarkdownViewer :file-name="fileDataStore.currentTextRow.name"
-                        :file-url="fileDataStore.currentTextRow.url"
-                        v-if="dialogTextVisible && fileDataStore.currentTextRow.name.indexOf('.md') !== -1"/>
+        <TextViewer :file-name="fileDataStore.currentPreviewRow.name"
+                    :file-url="fileDataStore.currentPreviewRow.url"
+                    v-if="dialogTextVisible && fileDataStore.currentPreviewRow.name.indexOf('.md') === -1"/>
+        <MarkdownViewer :file-name="fileDataStore.currentPreviewRow.name"
+                        :file-url="fileDataStore.currentPreviewRow.url"
+                        v-if="dialogTextVisible && fileDataStore.currentPreviewRow.name.indexOf('.md') !== -1"/>
       </el-dialog>
 
       <!-- pdf 在线预览 -->
       <el-dialog draggable class="zfile-pdf-dialog"
-                 :title="fileDataStore.currentClickRow.name"
+                 :title="fileDataStore.currentPreviewRow.name"
                  v-model="dialogPdfVisible">
-        <PdfViewer :file-name="fileDataStore.currentClickRow.name"
-                    :file-url="fileDataStore.currentClickRow.url"
+        <PdfViewer :file-name="fileDataStore.currentPreviewRow.name"
+                    :file-url="fileDataStore.currentPreviewRow.url"
                     v-if="dialogPdfVisible"/>
       </el-dialog>
 
       <!-- office 在线预览 -->
       <el-dialog draggable class="zfile-office-dialog zfile-dialog-mini-close zfile-dialog-hidden-title"
-                 :title="fileDataStore.currentClickRow.name"
+                 :title="fileDataStore.currentPreviewRow.name"
                  v-model="dialogOfficeVisible">
         <OfficeViewer
-          :file-name="fileDataStore.currentClickRow.name"
-          :file-url="fileDataStore.currentClickRow.url"
+          :file-name="fileDataStore.currentPreviewRow.name"
+          :file-url="fileDataStore.currentPreviewRow.url"
           v-if="dialogOfficeVisible"/>
       </el-dialog>
 
       <!-- 3d 在线预览 -->
       <el-dialog draggable class="zfile-3d-dialog"
-                 :title="fileDataStore.currentClickRow.name"
+                 :title="fileDataStore.currentPreviewRow.name"
                  v-model="dialog3dVisible">
         <Three3dPreview
-          :file-name="fileDataStore.currentClickRow.name"
-          :file-url="fileDataStore.currentClickRow.url"
+          :file-name="fileDataStore.currentPreviewRow.name"
+          :file-url="fileDataStore.currentPreviewRow.url"
            v-if="dialog3dVisible"/>
       </el-dialog>
 

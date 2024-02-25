@@ -2,18 +2,11 @@
 	<div class="zfile-header">
     <div class="zfile-header-breadcrumb box animate__animated animate__fadeIn flex flex-1">
       <header-logo></header-logo>
-      <breadcrumb class="h-12" :items="breadcrumbData" @breadcrumb-click="clickBreadcrumb">
-      </breadcrumb>
     </div>
 
-		<div class="zfile-header-right box animate__animated animate__fadeIn">
-
-      <!-- 文件搜索 -->
-      <div class="searchKey">
-        <el-input placeholder="请输入搜索内容" v-model="fileDataStore.searchKey" :suffix-icon="Search"></el-input>
-      </div>
+		<div class="zfile-header-right box animate__animated animate__fadeIn" v-if="isNotMobile">
       <!-- 功能区 -->
-			<div class="zfile-header-btn" v-if="isNotMobile">
+			<div class="zfile-header-btn">
 
         <!-- debug 模式 -->
         <template v-if="storageConfigStore.globalConfig.debugMode">
@@ -26,134 +19,6 @@
             </el-button>
           </el-tooltip>
         </template>
-
-        <!-- 上传 -->
-				<el-dropdown v-if="storageConfigStore.permission.upload || storageConfigStore.permission.newFolder" trigger="click"
-                     popper-class="zfile-header-dropdown">
-					<div v-show="route.params.storageKey">
-            <el-badge :value="uploadProgressInfoStatistics.totalUploadingAndWaiting"
-                      :hidden="uploadProgressInfoStatistics.totalUploadingAndWaiting === 0"
-                      :max="99"
-                      class="!block">
-						  <svg-icon class="text-2xl text-gray-500 hover:text-blue-500" name="add"></svg-icon>
-            </el-badge>
-					</div>
-					<template #dropdown>
-						<el-dropdown-menu class="font-medium">
-							<el-dropdown-item v-if="storageConfigStore.permission.newFolder" @click="newFolder">
-								<svg-icon class="text-[17px] mr-3" name="add-folder"></svg-icon>
-								新建文件夹
-							</el-dropdown-item>
-
-              <template v-if="storageConfigStore.permission.upload">
-                <el-dropdown-item @click="openUploadDialog" :divided="storageConfigStore.permission.upload && storageConfigStore.permission.newFolder">
-                  <svg-icon class="text-[17px] mr-3" name="upload"></svg-icon>
-                  上传文件
-                </el-dropdown-item>
-
-                <el-dropdown-item @click="openUploadFolderDialog">
-                  <svg-icon class="text-[17px] mr-3" name="upload-folder"></svg-icon>
-                  上传文件夹
-                </el-dropdown-item>
-              </template>
-
-              <el-dropdown-item @click="openMoveDialog" v-if="storageConfigStore.permission.move">
-                <el-icon class="dropdown-item-icon"><DocumentRemove /></el-icon>
-                移动文件
-              </el-dropdown-item>
-
-              <el-dropdown-item @click="openMoveFolderDialog" v-if="storageConfigStore.permission.moveFolder">
-                <el-icon class="dropdown-item-icon"><FolderRemove /></el-icon>
-                移动文件夹
-              </el-dropdown-item>
-
-              <el-dropdown-item @click="openCopyDialog" v-if="storageConfigStore.permission.copy">
-                <el-icon class="dropdown-item-icon"><DocumentCopy /></el-icon>
-                复制文件
-              </el-dropdown-item>
-
-              <el-dropdown-item @click="openCopyFolderDialog" v-if="storageConfigStore.permission.copyFolder">
-                <el-icon class="dropdown-item-icon"><CopyDocument /></el-icon>
-                复制文件夹
-              </el-dropdown-item>
-
-              <el-dropdown-item v-if="storageConfigStore.permission.arrangeFolder" :divided="storageConfigStore.permission.arrangeFolder">
-                <el-dropdown type=""  placement="left-start" trigger="hover" popper-class="zfile-header-dropdown">
-                  <div style="display:flex;">
-                      <el-icon class="dropdown-item-icon" ><ArrowLeft /></el-icon>
-                      文件夹整理
-                  </div>
-                  <template  #dropdown>
-                    <el-dropdown-menu>
-                      <el-dropdown-item @click="unFolder" divided>
-                        <el-icon class="dropdown-item-icon"><FolderOpened /></el-icon>
-                        解散文件夹
-                      </el-dropdown-item>
-
-                      <el-dropdown-item @click="openRepeatDialog" divided>
-                        <el-icon class="dropdown-item-icon"><DocumentCopy /></el-icon>
-                        查找重复文件
-                      </el-dropdown-item>
-
-                      <el-dropdown-item @click="arrangeFolderByTime('yyyy')" divided>
-                        <el-icon class="dropdown-item-icon"><Calendar /></el-icon>
-                        按照年整理文件夹
-                      </el-dropdown-item>
-
-                      <el-dropdown-item @click="arrangeFolderByTime('yyyy/MM')">
-                        <el-icon class="dropdown-item-icon"><Calendar /></el-icon>
-                        按照年月整理文件夹
-                      </el-dropdown-item>
-
-                      <el-dropdown-item @click="arrangeFolderByTime('yyyy/MM/dd')">
-                        <el-icon class="dropdown-item-icon"><Timer /></el-icon>
-                        按照年月日整理文件夹
-                      </el-dropdown-item>
-
-                      <el-dropdown-item @click="arrangeFolderByAddress('国')" divided>
-                        <el-icon class="dropdown-item-icon"><Position /></el-icon>
-                        按照国整理文件夹
-                      </el-dropdown-item>
-                      <el-dropdown-item @click="arrangeFolderByAddress('国省')">
-                        <el-icon class="dropdown-item-icon"><Position /></el-icon>
-                        按照国省整理文件夹
-                      </el-dropdown-item>
-                      <el-dropdown-item @click="arrangeFolderByAddress('省')">
-                        <el-icon class="dropdown-item-icon"><Position /></el-icon>
-                        按照省整理文件夹
-                      </el-dropdown-item>
-                      <el-dropdown-item @click="arrangeFolderByAddress('省市')">
-                        <el-icon class="dropdown-item-icon"><Position /></el-icon>
-                        按照省市整理文件夹
-                      </el-dropdown-item>
-                      <el-dropdown-item @click="arrangeFolderByAddress('省市县')">
-                        <el-icon class="dropdown-item-icon"><Position /></el-icon>
-                        按照省市县整理文件夹
-                      </el-dropdown-item>
-
-                      <el-dropdown-item @click="arrangeFolderByFileType" divided>
-                        <el-icon class="dropdown-item-icon"><Document /></el-icon>
-                        按照文件类型整理文件夹
-                      </el-dropdown-item>
-                    </el-dropdown-menu>
-                  </template>
-                </el-dropdown>
-              </el-dropdown-item>
-              
-
-              <template v-if="storageConfigStore.permission.arrangeFolder">
-                
-              </template>
-						</el-dropdown-menu>
-            
-					</template>
-				</el-dropdown>
-
-        <!-- 画廊模式切换 -->
-				<div v-show="route.params.storageKey" @click="fileDataStore.imgMode = !fileDataStore.imgMode">
-					<svg-icon v-if="fileDataStore.imgMode" class="text-4xl" name="img-enable"></svg-icon>
-					<svg-icon v-else class="text-4xl" name="img-disable"></svg-icon>
-				</div>
 
         <!-- 设置按钮 -->
         <el-tooltip placement="bottom">
@@ -177,16 +42,6 @@
 				</el-tooltip>
 			</div>
 
-      <!-- 存储源选择 -->
-			<div class="zfile-header-storage-select" v-if="false">
-				<el-select size="default" v-model="currentStorageKey" placeholder="请选择存储源">
-					<el-option v-for="item in storageList"
-					           :key="item.key"
-					           :label="item.name"
-					           :value="item.key">
-					</el-option>
-				</el-select>
-			</div>
       <!-- 用户信息 -->
       <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
         <el-dropdown trigger="click" popper-class="zfile-header-dropdown">
@@ -231,26 +86,6 @@
               <svg-icon class="text-base mr-2 text-gray-500" name="login"></svg-icon>
               后台管理
             </el-dropdown-item>
-            <el-dropdown-item v-if="storageConfigStore.permission.newFolder" @click="newFolder">
-              <svg-icon class="text-base mr-2 text-gray-500" name="add-folder"></svg-icon>
-              新建文件夹
-            </el-dropdown-item>
-            <el-dropdown-item v-if="storageConfigStore.permission.upload" @click="openUploadDialog">
-              <svg-icon class="text-base mr-2 text-gray-500" name="upload"></svg-icon>
-              上传文件
-            </el-dropdown-item>
-            <el-dropdown-item v-if="storageConfigStore.permission.upload" @click="openUploadFolderDialog">
-              <svg-icon class="text-base mr-2 text-gray-500" name="upload-folder"></svg-icon>
-              上传文件夹
-            </el-dropdown-item>
-            <el-dropdown-item v-if="!fileDataStore.imgMode" @click="fileDataStore.imgMode = true">
-              <svg-icon class="text-base mr-2 text-gray-500" name="image"></svg-icon>
-              打开画廊模式
-            </el-dropdown-item>
-            <el-dropdown-item v-else-if="fileDataStore.imgMode" @click="fileDataStore.imgMode = false">
-              <svg-icon class="text-base mr-2 text-gray-500" name="image"></svg-icon>
-              关闭画廊模式
-            </el-dropdown-item>
             <el-dropdown-item @click="router.push('/user/update-password')">
                 修改密码
             </el-dropdown-item>
@@ -274,10 +109,6 @@
 
 <script setup>
 import { Bars3Icon } from '@heroicons/vue/24/outline'
-import {
-  Menu, MenuButton, MenuItem, MenuItems
-} from '@headlessui/vue';
-import { Search, View, Position} from '@element-plus/icons-vue'
 import common from "~/common";
 
 let router = useRouter();
@@ -286,14 +117,6 @@ let route = useRoute();
 // debug 模式相关操作.
 import useHeaderDebugMode from "~/composables/header/useHeaderDebugMode";
 const { resetAdminPwd } = useHeaderDebugMode();
-
-// 存储源列表.
-import useHeaderStorageList from "~/composables/header/useHeaderStorageList";
-const { loadStorageSourceList, currentStorageKey, storageList } = useHeaderStorageList();
-
-// 面包屑数据和操作
-import useBreadcrumb from "~/composables/header/useHeaderBreadcrumb";
-const { buildBreadcrumbData, breadcrumbData } = useBreadcrumb();
 
 import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
@@ -315,40 +138,6 @@ if(userstr != null){
   user = JSON.parse(userstr);
   role.value = user.role;
 }
-
-onMounted(() => {
-	loadStorageSourceList().then(() => {
-		buildBreadcrumbData();
-	});
-})
-
-const clickBreadcrumb = (item) => {
-  if (item.href) {
-    router.push(item.href);
-  }
-}
-
-watch(() => route.params.storageKey, (value) => {
-	if (value === undefined) {
-		currentStorageKey.value = '';
-	}
-})
-
-// let searchKey = ref('');
-// watch(() => searchKey.value, () => {
-//   console.log('searchKey', searchKey.value)
-//   fileDataStore.searchKey = searchKey.value
-// });
-
-import useFileOperator from '~/composables/file/useFileOperator';
-const { newFolder, unFolder, arrangeFolderByTime, arrangeFolderByAddress, arrangeFolderByFileType } = useFileOperator();
-
-import useFileUpload from "~/composables/file/useFileUpload";
-const { openUploadDialog, openUploadFolderDialog, uploadProgressInfoStatistics } = useFileUpload();
-import useFileCopyMove from "~/composables/file/useFileCopyMove";
-const { openMoveDialog, openMoveFolderDialog,openCopyDialog, openCopyFolderDialog } = useFileCopyMove();
-import useFileRepeat from "~/composables/file/useFileRepeat";
-const { openRepeatDialog } = useFileRepeat();
 
 import useSetting from "~/composables/header/useSetting";
 const { openSettingVisible } = useSetting();

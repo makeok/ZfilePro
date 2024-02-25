@@ -2,12 +2,203 @@
   <div class="zfile-index-body-wrapper" @contextmenu="showFileMenu">
     <div class="zfile-index-body"
          :class="'zfile-index-table-' + storageConfigStore.globalConfig?.layout">
+      <div class="zfile-header">
+        <breadcrumb class="h-12" :items="breadcrumbData" @breadcrumb-click="clickBreadcrumb">
+        </breadcrumb>
+        <div class="zfile-header-right box animate__animated animate__fadeIn" v-if="isNotMobile">
+          <!-- 文件搜索 -->
+          <div class="searchKey">
+            <el-input placeholder="请输入搜索内容" style="width:15em;" v-model="fileDataStore.searchKey" clearable :suffix-icon="Search"></el-input>
+          </div>
+
+          <div class="zfile-header-btn">
+            <!-- 上传 -->
+            <el-dropdown v-if="storageConfigStore.permission.upload || storageConfigStore.permission.newFolder" trigger="click"
+                        popper-class="zfile-header-dropdown">
+              <div v-show="route.params.storageKey">
+                <el-badge :value="uploadProgressInfoStatistics.totalUploadingAndWaiting"
+                          :hidden="uploadProgressInfoStatistics.totalUploadingAndWaiting === 0"
+                          :max="99"
+                          class="!block">
+                  <svg-icon class="text-2xl text-gray-500 hover:text-blue-500" name="add"></svg-icon>
+                </el-badge>
+              </div>
+              <template #dropdown>
+                <el-dropdown-menu class="font-medium">
+                  <el-dropdown-item v-if="storageConfigStore.permission.newFolder" @click="newFolder">
+                    <svg-icon class="text-[17px] mr-3" name="add-folder"></svg-icon>
+                    新建文件夹
+                  </el-dropdown-item>
+
+                  <template v-if="storageConfigStore.permission.upload">
+                    <el-dropdown-item @click="openUploadDialog" :divided="storageConfigStore.permission.upload && storageConfigStore.permission.newFolder">
+                      <svg-icon class="text-[17px] mr-3" name="upload"></svg-icon>
+                      上传文件
+                    </el-dropdown-item>
+
+                    <el-dropdown-item @click="openUploadFolderDialog">
+                      <svg-icon class="text-[17px] mr-3" name="upload-folder"></svg-icon>
+                      上传文件夹
+                    </el-dropdown-item>
+                  </template>
+
+                  <el-dropdown-item @click="openMoveDialog" v-if="storageConfigStore.permission.move">
+                    <el-icon class="dropdown-item-icon"><DocumentRemove /></el-icon>
+                    移动文件
+                  </el-dropdown-item>
+
+                  <el-dropdown-item @click="openMoveFolderDialog" v-if="storageConfigStore.permission.moveFolder">
+                    <el-icon class="dropdown-item-icon"><FolderRemove /></el-icon>
+                    移动文件夹
+                  </el-dropdown-item>
+
+                  <el-dropdown-item @click="openCopyDialog" v-if="storageConfigStore.permission.copy">
+                    <el-icon class="dropdown-item-icon"><DocumentCopy /></el-icon>
+                    复制文件
+                  </el-dropdown-item>
+
+                  <el-dropdown-item @click="openCopyFolderDialog" v-if="storageConfigStore.permission.copyFolder">
+                    <el-icon class="dropdown-item-icon"><CopyDocument /></el-icon>
+                    复制文件夹
+                  </el-dropdown-item>
+
+                  <el-dropdown-item v-if="storageConfigStore.permission.arrangeFolder" :divided="storageConfigStore.permission.arrangeFolder">
+                    <el-dropdown type=""  placement="left-start" trigger="hover" popper-class="zfile-header-dropdown">
+                      <div style="display:flex;">
+                          <el-icon class="dropdown-item-icon" ><ArrowLeft /></el-icon>
+                          文件夹整理
+                      </div>
+                      <template  #dropdown>
+                        <el-dropdown-menu>
+                          <el-dropdown-item @click="unFolder" divided>
+                            <el-icon class="dropdown-item-icon"><FolderOpened /></el-icon>
+                            解散文件夹
+                          </el-dropdown-item>
+
+                          <el-dropdown-item @click="openRepeatDialog" divided>
+                            <el-icon class="dropdown-item-icon"><DocumentCopy /></el-icon>
+                            查找重复文件
+                          </el-dropdown-item>
+
+                          <el-dropdown-item @click="arrangeFolderByTime('yyyy')" divided>
+                            <el-icon class="dropdown-item-icon"><Calendar /></el-icon>
+                            按照年整理文件夹
+                          </el-dropdown-item>
+
+                          <el-dropdown-item @click="arrangeFolderByTime('yyyy/MM')">
+                            <el-icon class="dropdown-item-icon"><Calendar /></el-icon>
+                            按照年月整理文件夹
+                          </el-dropdown-item>
+
+                          <el-dropdown-item @click="arrangeFolderByTime('yyyy/MM/dd')">
+                            <el-icon class="dropdown-item-icon"><Timer /></el-icon>
+                            按照年月日整理文件夹
+                          </el-dropdown-item>
+
+                          <el-dropdown-item @click="arrangeFolderByAddress('国')" divided>
+                            <el-icon class="dropdown-item-icon"><Position /></el-icon>
+                            按照国整理文件夹
+                          </el-dropdown-item>
+                          <el-dropdown-item @click="arrangeFolderByAddress('国省')">
+                            <el-icon class="dropdown-item-icon"><Position /></el-icon>
+                            按照国省整理文件夹
+                          </el-dropdown-item>
+                          <el-dropdown-item @click="arrangeFolderByAddress('省')">
+                            <el-icon class="dropdown-item-icon"><Position /></el-icon>
+                            按照省整理文件夹
+                          </el-dropdown-item>
+                          <el-dropdown-item @click="arrangeFolderByAddress('省市')">
+                            <el-icon class="dropdown-item-icon"><Position /></el-icon>
+                            按照省市整理文件夹
+                          </el-dropdown-item>
+                          <el-dropdown-item @click="arrangeFolderByAddress('省市县')">
+                            <el-icon class="dropdown-item-icon"><Position /></el-icon>
+                            按照省市县整理文件夹
+                          </el-dropdown-item>
+
+                          <el-dropdown-item @click="arrangeFolderByFileType" divided>
+                            <el-icon class="dropdown-item-icon"><Document /></el-icon>
+                            按照文件类型整理文件夹
+                          </el-dropdown-item>
+                        </el-dropdown-menu>
+                      </template>
+                    </el-dropdown>
+                  </el-dropdown-item>
+                  
+
+                  <template v-if="storageConfigStore.permission.arrangeFolder">
+                    
+                  </template>
+                </el-dropdown-menu>
+                
+              </template>
+            </el-dropdown>
+
+            <!-- 画廊模式切换 -->
+            <div v-show="route.params.storageKey" @click="fileDataStore.imgMode = !fileDataStore.imgMode">
+              <svg-icon v-if="fileDataStore.imgMode" class="text-4xl" name="img-enable"></svg-icon>
+              <svg-icon v-else class="text-4xl" name="img-disable"></svg-icon>
+            </div>
+
+            <!-- webdavInfo切换 -->
+            <div v-show="route.params.storageKey && storageConfigStore.folderConfig.enableWebdav" @click="webdavInfoShow = !webdavInfoShow" >
+              <el-icon :size="24" style="top:-0.4em;" :color="webdavInfoIconColor"><InfoFilled /></el-icon>
+            </div>
+
+          </div><!-- 右侧按钮区 -->
+
+          <!-- 存储源选择 -->
+          <div class="zfile-header-storage-select" v-if="false">
+            <el-select size="default" v-model="currentStorageKey" placeholder="请选择存储源">
+              <el-option v-for="item in storageList"
+                        :key="item.key"
+                        :label="item.name"
+                        :value="item.key">
+              </el-option>
+            </el-select>
+          </div>
+        </div><!-- 右侧区 -->
+
+        <div v-if="isMobile" v-show="route.params.storageKey">
+          <el-dropdown trigger="click" class="top-3">
+            <Bars3Icon class="block h-6 w-6" aria-hidden="true"/>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item v-if="storageConfigStore.globalConfig.showLogin && role=='系统管理员'" @click="toLoginView">
+                  <svg-icon class="text-base mr-2 text-gray-500" name="login"></svg-icon>
+                  后台管理
+                </el-dropdown-item>
+                <el-dropdown-item v-if="storageConfigStore.permission.newFolder" @click="newFolder">
+                  <svg-icon class="text-base mr-2 text-gray-500" name="add-folder"></svg-icon>
+                  新建文件夹
+                </el-dropdown-item>
+                <el-dropdown-item v-if="storageConfigStore.permission.upload" @click="openUploadDialog">
+                  <svg-icon class="text-base mr-2 text-gray-500" name="upload"></svg-icon>
+                  上传文件
+                </el-dropdown-item>
+                <el-dropdown-item v-if="storageConfigStore.permission.upload" @click="openUploadFolderDialog">
+                  <svg-icon class="text-base mr-2 text-gray-500" name="upload-folder"></svg-icon>
+                  上传文件夹
+                </el-dropdown-item>
+                <el-dropdown-item v-if="!fileDataStore.imgMode" @click="fileDataStore.imgMode = true">
+                  <svg-icon class="text-base mr-2 text-gray-500" name="image"></svg-icon>
+                  打开画廊模式
+                </el-dropdown-item>
+                <el-dropdown-item v-else-if="fileDataStore.imgMode" @click="fileDataStore.imgMode = false">
+                  <svg-icon class="text-base mr-2 text-gray-500" name="image"></svg-icon>
+                  关闭画廊模式
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
+      </div><!-- head区 -->
 
       <!-- 公告 -->
       <el-alert v-if="storageConfigStore.globalConfig.showAnnouncement && storageConfigStore.globalConfig.announcement" class="zfile-index-announcement" type="success">
         <v-md-preview :text="storageConfigStore.globalConfig.announcement"></v-md-preview>
       </el-alert>
-
+    
       <!-- 文档模式显示 -->
       <el-card v-if="storageConfigStore.globalConfig.showDocument
                 && route.params.storageKey
@@ -17,13 +208,14 @@
       </el-card>
 
       <!-- 公告 -->
-      <el-alert v-if="storageConfigStore.folderConfig.enableWebdav" 
+      <el-alert v-if="storageConfigStore.folderConfig.enableWebdav && webdavInfoShow" 
               class="zfile-index-announcement" type="info" show-icon>
         <span>webdav已开启，地址为</span>
         <a :href="webdavUrl"
           style="color: green;margin-left:0.5em;">
         {{ webdavUrl }}</a>
       </el-alert>
+
       <!-- 文件区 -->
       <el-table
         v-if="!fileDataStore.imgMode"
@@ -244,6 +436,12 @@
 <script setup>
 import common from "~/common";
 
+import {
+  Menu, MenuButton, MenuItem, MenuItems
+} from '@headlessui/vue';
+import { Search, View, Position} from '@element-plus/icons-vue'
+import { Bars3Icon } from '@heroicons/vue/24/outline'
+
 import MarkdownViewerAsyncLoading from "~/components/file/preview/MarkdownViewerAsyncLoading.vue";
 import MarkdownViewerDialogAsyncLoading from "~/components/file/preview/MarkdownViewerDialogAsyncLoading.vue";
 import VideoPlayerAsyncLoading from "~/components/file/preview/VideoPlayerAsyncLoading.vue";
@@ -274,6 +472,40 @@ import useCommon from "~/composables/useCommon";
 import useFileSelect from "~/composables/file/useFileSelect";
 // 文件上传相关
 import useRouterData from "~/composables/useRouterData";
+
+// 存储源列表.
+import useHeaderStorageList from "~/composables/header/useHeaderStorageList";
+const { loadStorageSourceList, currentStorageKey, storageList } = useHeaderStorageList();
+// 面包屑数据和操作
+import useBreadcrumb from "~/composables/header/useHeaderBreadcrumb";
+const { buildBreadcrumbData, breadcrumbData } = useBreadcrumb();
+
+const clickBreadcrumb = (item) => {
+  if (item.href) {
+    router.push(item.href);
+  }
+}
+
+onMounted(() => {
+	loadStorageSourceList().then(() => {
+		buildBreadcrumbData();
+	});
+})
+
+import useFileOperator from '~/composables/file/useFileOperator';
+const { newFolder, unFolder, arrangeFolderByTime, arrangeFolderByAddress, arrangeFolderByFileType } = useFileOperator();
+import useFileUpload from "~/composables/file/useFileUpload";
+const { openUploadDialog, openUploadFolderDialog, uploadProgressInfoStatistics } = useFileUpload();
+import useFileCopyMove from "~/composables/file/useFileCopyMove";
+const { openMoveDialog, openMoveFolderDialog,openCopyDialog, openCopyFolderDialog } = useFileCopyMove();
+import useFileRepeat from "~/composables/file/useFileRepeat";
+const { openRepeatDialog } = useFileRepeat();
+
+// webdavInfo
+let webdavInfoShow = ref(false)
+const webdavInfoIconColor = computed(() =>
+  webdavInfoShow.value ? '#79bbff' : ''
+)
 
 // markdown viewer 组件懒加载, 节约首屏打开时间
 const VMdPreview = defineAsyncComponent({
@@ -327,7 +559,7 @@ const Three3dPreview = defineAsyncComponent({
 
 const FileGallery = defineAsyncComponent(() => import("~/components/file/preview/FileGallery.vue"))
 
-const { isNotMobile } = useCommon();
+const { isNotMobile, isMobile, encodeAllIgnoreSlashes } = useCommon();
 
 let route = useRoute();
 let router = useRouter();
@@ -363,6 +595,9 @@ const webdavUrl = computed(() => {
 
 // 切换存储源或路径时，重新加载文件列表
 watch(() => [route.params.storageKey, route.params.fullpath], () => {
+  if (route.params.storageKey === undefined) {
+		currentStorageKey.value = '';
+	}
   loadFile();
 })
 
@@ -647,6 +882,115 @@ const searchKeyClick = (event) => {
 }
 
 </style>
+
+
+<style scoped lang="scss">
+
+.zfile-header {
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-between;
+	height: 48px;
+	line-height: 48px !important;
+	padding: 0 15px;
+
+	background-color: #ffffff;
+	color: #606266;
+	transition: border-color var(--el-transition-duration), background-color var(--el-transition-duration);
+	border-bottom: 1px solid rgba(132, 133, 141, 0.2);
+
+	.el-scrollbar {
+    @apply w-full;
+		:deep(.el-scrollbar__bar.is-vertical) {
+			display: none !important;
+		}
+	}
+
+	.zfile-header-breadcrumb {
+		:deep(.el-breadcrumb) {
+			line-height: 48px;
+			font-size: 13px;
+			white-space: nowrap;
+			margin-left: 14px;
+
+			.el-breadcrumb__item {
+				display: inline;
+				float: none;
+			}
+		}
+	}
+
+	.zfile-header-right {
+		@apply flex space-x-10;
+
+    :deep(.el-dropdown) {
+      line-height: 48px !important;
+    }
+
+		.zfile-header-btn {
+			@apply flex text-4xl space-x-5 items-center;
+
+			div {
+				@apply cursor-pointer h-5 #{!important};
+			}
+		}
+
+		.zfile-header-storage-select {
+			@apply mr-4 min-w-[200px];
+		}
+	}
+
+}
+
+@media only screen and (max-width: 767px) {
+	.zfile-header {
+		:deep(.el-breadcrumb__separator) {
+			display: none !important;
+		}
+
+		:deep(.el-form-item__label) {
+			display: none !important;
+		}
+
+		:deep(.el-select) {
+			width: 120px;
+      @apply truncate text-sm font-medium text-gray-700;
+		}
+	}
+}
+
+.zfile-debug-tips {
+	:deep(.el-form-item__label) {
+		font-weight: bold;
+		color: red !important;
+	}
+}
+
+
+.zfile-header-storage-select {
+  :deep(.el-input__wrapper) {
+    @apply truncate text-sm font-medium;
+  }
+}
+
+</style>
+
+<style lang="scss">
+.zfile-header-dropdown {
+	.el-dropdown-menu__item:hover,
+	.el-dropdown-menu__item:hover svg {
+		@apply text-blue-500
+	}
+  .el-dropdown-menu__item{
+    i.dropdown-item-icon{
+      font-size: 17px;
+      margin-right: 12px;
+    }
+  }
+}
+
+</style>
+
 
 <route lang="yaml">
 meta:
